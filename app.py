@@ -27,7 +27,7 @@ Dein Charakter:
 model= genai.GenerativeModel(
     'gemini-1.5-flash')
 
-)
+
 
 # --- DESIGN ---
 st.markdown("""
