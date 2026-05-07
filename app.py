@@ -24,8 +24,7 @@ Dein Charakter:
 """
 
 # KI-Modell Setup (Aktualisierte Version)
-model= genai.GenerativeModel(
-    'gemini-1.5-flash')
+model = genai.GenerativeModel('models/gemini-1.5-flash')
 
 
 
