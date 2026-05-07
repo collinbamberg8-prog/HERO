@@ -25,7 +25,7 @@ Dein Charakter:
 
 # KI-Modell Setup (Aktualisierte Version)
 model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash-latest",
+    model_name="gemini-pro ",
     system_instruction=HERO_PROMPT
 )
 
