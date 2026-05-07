@@ -23,8 +23,13 @@ Dein Charakter:
 - Dein Stil ist modern, düster (Cyberpunk-Vibe) und hochprofessionell.
 """
 
-# KI-Modell Setup (Aktualisierte Version)
-model = genai.GenerativeModel('models/gemini-1.5-flash')
+
+# --- KI-MODEL SETUP (DER SICHERE WEG) ---
+try:
+    model = genai.GenerativeModel('gemini-1.5-flash')
+except:
+    model = genai.GenerativeModel('gemini-pro')
+
 
 
 
