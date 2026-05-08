@@ -5,7 +5,7 @@ import google.generativeai as genai
 st.set_page_config(page_title="Hero", page_icon="🌑")
 
 # 1. HIER DEINEN KEY EINSETZEN
-API_KEY = "DEIN_API_KEY_HIER"
+API_KEY = "AIzaSyAE9j4iwcN0qqFl0uwSCB7ykBiYu8mabTc"
 genai.configure(api_key=API_KEY)
 
 st.title("🌑 Hero")
