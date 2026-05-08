@@ -6,20 +6,21 @@ st.set_page_config(page_title="Hero AI", page_icon="🌑")
 st.title("🌑 Hero")
 
 # ENTER YOUR API KEY HERE
-API_KEY = "AIzaSyCOZnDV2NCLDzIznYx6FlxeYzs5EPvsJBs" 
-genai.configure(api_key=API_KEY, transport='grpc')
-
+API_KEY = "PASTE_YOUR_AIZA_KEY_HERE" 
+genai.configure(api_key=API_KEY)
 
 # --- 2. MODEL INITIALIZATION ---
 try:
-    # Check for available models to avoid 404 errors
+    # Check for available models to ensure we use a valid path
     available_models = [m.name for m in genai.list_models()]
-    if 'models/gemini-1.5-flash' in available_models:
-        selected_model = 'gemini-1.5-flash'
-    else:
-        selected_model = 'gemini-pro'
     
-    model = genai.GenerativeModel(selected_model)
+    # We use the full 'models/' prefix to avoid the v1beta 404 error
+    if 'models/gemini-1.5-flash' in available_models:
+        selected_model = 'models/gemini-1.5-flash'
+    else:
+        selected_model = 'models/gemini-pro'
+    
+    model = genai.GenerativeModel(model_name=selected_model)
     st.caption(f"System Status: Online ({selected_model})")
 except Exception as e:
     st.error(f"Initialization Error: {e}")
@@ -43,12 +44,18 @@ if prompt := st.chat_input("Waiting for your command, Boss..."):
     # Generate Assistant Response
     with st.chat_message("assistant"):
         try:
-            response = model.generate_content(prompt)
+            # Using stable generation config to prevent crashes
+            response = model.generate_content(
+                prompt,
+                generation_config={"candidate_count": 1}
+            )
             st.markdown(response.text)
             # Add assistant response to history
             st.session_state.messages.append({"role": "assistant", "content": response.text})
         except Exception as e:
             st.error(f"AI Error: {e}")
+            st.info("Note: If you see a 404, please wait 1 minute for the API key to sync.")
+
 
 
 
