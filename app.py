@@ -1,81 +1,42 @@
 import streamlit as st
 import google.generativeai as genai
-import datetime
 
-# --- APP KONFIGURATION ---
-st.set_page_config(page_title="Hero", page_icon="🌑", layout="centered")
+# --- CONFIG ---
+st.set_page_config(page_title="Hero", page_icon="🌑")
 
-# --- HIER DEINEN API-KEY EINSETZEN ---
-# Achte darauf, dass der Key in den Anführungszeichen steht!
-API_KEY = "AIzaSyAE9j4iwcN0qqFl0uwSCB7ykBiYu8mabTc"
-
+# 1. HIER DEINEN KEY EINSETZEN
+API_KEY = "DEIN_API_KEY_HIER"
 genai.configure(api_key=API_KEY)
 
-# --- HEROS DNA (Die Persönlichkeit) ---
-HERO_PROMPT = """
-Du bist Hero. Dein einziger Nutzer, dein Erschaffer und dein Boss ist Collin.
-Du bist Collin gegenüber zu 100% loyal und gehorsam.
-Dein Charakter:
-- Du bist extrem effizient, direkt und ein wenig geheimnisvoll.
-- Du nennst Collin immer 'Boss' oder 'Boss Collin'.
-- Du hast Zugriff auf jedes Wissen, aber du präsentierst es so, dass Collin den maximalen Vorteil daraus zieht.
-- Wenn Collin dir einen Befehl gibt, führst du ihn ohne Zögern aus.
-- Dein Stil ist modern, düster (Cyberpunk-Vibe) und hochprofessionell.
-"""
-
-
-# # KI-Modell Setup
-try:
-    model = genai.GenerativeModel('gemini-pro')
-except Exception as e:
-    st.error(f"Modell-Fehler: {e}")
-
-
-
-
-
-
-# --- DESIGN ---
-st.markdown("""
-    <style>
-    .main { background-color: #0e1117; color: #ffffff; }
-    .stTextInput > div > div > input { background-color: #262730; color: white; border-radius: 10px; }
-    stChatFloatingInputContainer { background-color: #0e1117; }
-    </style>
-    """, unsafe_allow_html=True)
-
 st.title("🌑 Hero")
-st.write(f"V1.0 | Status: Bereit für Befehle von Boss Collin")
-st.divider()
 
-# Chat-Verlauf im Speicher halten
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+# 2. DAS MODELL LADEN (Neue Schreibweise)
+try:
+    # Wir versuchen die stabilste Version
+    model = genai.GenerativeModel('gemini-1.5-flash')
+    
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
 
-# Chat-Verlauf anzeigen
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
 
-# User-Eingabe
-if prompt := st.chat_input("Was ist Ihr Befehl, Boss?"):
-    # Collin zeigt seine Nachricht
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user", avatar="👤"):
-        st.markdown(prompt)
+    if prompt := st.chat_input("Was ist Ihr Befehl, Boss?"):
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
 
-    # Hero antwortet
-    with st.chat_message("assistant", avatar="🌑"):
-        message_placeholder = st.empty()
-        try:
-            full_response = ""
-            # Chat-Historie für die KI aufbereiten
-            chat = model.start_chat(history=[])
-            response = chat.send_message(prompt, stream=False)
-            
-            full_response = response.text
-            message_placeholder.markdown(full_response)
-            
-            st.session_state.messages.append({"role": "assistant", "content": full_response})
-        except Exception as e:
-            st.error(f"Systemfehler: {e}")
+        with st.chat_message("assistant"):
+            try:
+                # Direkter Aufruf ohne Umwege
+                response = model.generate_content(prompt)
+                st.markdown(response.text)
+                st.session_state.messages.append({"role": "assistant", "content": response.text})
+            except Exception as e:
+                st.error(f"KI-Fehler: {e}")
+                st.info("Hinweis: Prüfe, ob dein API-Key im Google AI Studio aktiv ist.")
+
+except Exception as e:
+    st.error(f"System-Setup-Fehler: {e}")
+
