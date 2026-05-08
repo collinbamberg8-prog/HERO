@@ -7,7 +7,8 @@ st.title("🌑 Hero")
 
 # ENTER YOUR API KEY HERE
 API_KEY = "AIzaSyCOZnDV2NCLDzIznYx6FlxeYzs5EPvsJBs" 
-genai.configure(api_key=API_KEY)
+genai.configure(api_key=API_KEY, transport='grpc')
+
 
 # --- 2. MODEL INITIALIZATION ---
 try:
