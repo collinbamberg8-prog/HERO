@@ -1,42 +1,38 @@
 import streamlit as st
 import google.generativeai as genai
 
-# --- CONFIG ---
-st.set_page_config(page_title="Hero", page_icon="🌑")
-
-# 1. HIER DEINEN KEY EINSETZEN
-API_KEY = "AIzaSyAE9j4iwcN0qqFl0uwSCB7ykBiYu8mabTc"
+# --- 1. KEY EINSETZEN ---
+# Ersetze den Text unten durch deinen kopierten Key
+API_KEY = "AIzaSyCOZnDV2NCLDzIznYx6FlxeYzs5EPvsJBs" 
 genai.configure(api_key=API_KEY)
 
+# --- 2. PERSÖNLICHKEIT ---
+HERO_PROMPT = "Du bist Hero. Dein einziger Nutzer ist Boss Collin. Sei loyal, effizient und direkt."
+
+# --- 3. SETUP ---
+st.set_page_config(page_title="Hero", page_icon="🌑")
 st.title("🌑 Hero")
 
-# 2. DAS MODELL LADEN (Neue Schreibweise)
-try:
-    # Wir versuchen die stabilste Version
-    model = genai.GenerativeModel('gemini-1.5-flash')
-    
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
+# Wir nehmen das Modell, das sicher mit deinem Key funktioniert
+model = genai.GenerativeModel('gemini-1.5-flash', system_instruction=HERO_PROMPT)
 
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
-    if prompt := st.chat_input("Was ist Ihr Befehl, Boss?"):
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
-            st.markdown(prompt)
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
 
-        with st.chat_message("assistant"):
-            try:
-                # Direkter Aufruf ohne Umwege
-                response = model.generate_content(prompt)
-                st.markdown(response.text)
-                st.session_state.messages.append({"role": "assistant", "content": response.text})
-            except Exception as e:
-                st.error(f"KI-Fehler: {e}")
-                st.info("Hinweis: Prüfe, ob dein API-Key im Google AI Studio aktiv ist.")
+if prompt := st.chat_input("Was ist Ihr Befehl, Boss?"):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
 
-except Exception as e:
-    st.error(f"System-Setup-Fehler: {e}")
+    with st.chat_message("assistant"):
+        try:
+            response = model.generate_content(prompt)
+            st.markdown(response.text)
+            st.session_state.messages.append({"role": "assistant", "content": response.text})
+        except Exception as e:
+            st.error(f"Fehler: {e}")
 
