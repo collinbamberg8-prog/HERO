@@ -5,20 +5,22 @@ import google.generativeai as genai
 st.set_page_config(page_title="Hero AI", page_icon="🌑")
 st.title("🌑 Hero")
 
-# ENTER YOUR API KEY HERE
+# PASTE YOUR NEW KEY HERE
 API_KEY = "AIzaSyAtV2u3HCQeyg_WAcdbLiNDm1vZBV2Li10" 
 genai.configure(api_key=API_KEY)
 
 # --- 2. MODEL INITIALIZATION ---
 try:
-    # Check for available models to ensure we use a valid path
+    # Auto-detect available models for your key
     available_models = [m.name for m in genai.list_models()]
     
-    # We use the full 'models/' prefix to avoid the v1beta 404 error
+    # Selection logic: Flash 1.5 -> Pro -> fallback
     if 'models/gemini-1.5-flash' in available_models:
         selected_model = 'models/gemini-1.5-flash'
-    else:
+    elif 'models/gemini-pro' in available_models:
         selected_model = 'models/gemini-pro'
+    else:
+        selected_model = available_models[0]
     
     model = genai.GenerativeModel(model_name=selected_model)
     st.caption(f"System Status: Online ({selected_model})")
@@ -29,32 +31,26 @@ except Exception as e:
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Display chat history
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-# User Input
 if prompt := st.chat_input("Waiting for your command, Boss..."):
-    # Add user message to history
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Generate Assistant Response
     with st.chat_message("assistant"):
         try:
-            # Using stable generation config to prevent crashes
             response = model.generate_content(
                 prompt,
                 generation_config={"candidate_count": 1}
             )
             st.markdown(response.text)
-            # Add assistant response to history
             st.session_state.messages.append({"role": "assistant", "content": response.text})
         except Exception as e:
             st.error(f"AI Error: {e}")
-            st.info("Note: If you see a 404, please wait 1 minute for the API key to sync.")
+
 
 
 
