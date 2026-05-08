@@ -6,7 +6,7 @@ st.set_page_config(page_title="Hero AI", page_icon="🌑")
 st.title("🌑 Hero")
 
 # ENTER YOUR API KEY HERE
-API_KEY = "AIzaSyAE9j4iwcN0qqFl0uwSCB7ykBiYu8mabTc" 
+API_KEY = "AIzaSyAtV2u3HCQeyg_WAcdbLiNDm1vZBV2Li10" 
 genai.configure(api_key=API_KEY)
 
 # --- 2. MODEL INITIALIZATION ---
