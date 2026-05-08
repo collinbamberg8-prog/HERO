@@ -24,11 +24,12 @@ Dein Charakter:
 """
 
 
-# --- KI-MODEL SETUP (DER SICHERE WEG) ---
+# # KI-Modell Setup
 try:
-    model = genai.GenerativeModel('gemini-1.5-flash')
-except:
     model = genai.GenerativeModel('gemini-pro')
+except Exception as e:
+    st.error(f"Modell-Fehler: {e}")
+
 
 
 
